@@ -7,6 +7,7 @@ const departmentRouter=require("./connectors/departmentRouter")
 const courseRouter=require("./connectors/courseRouter")
 const studentRouter=require("./connectors/studentRouter")
 const hodRouter=require("./connectors/hodRouter")
+const staffRouter=require("./connectors/staffRouter")
 
 const app = express();
 app.use(express.json());
@@ -22,6 +23,7 @@ app.use("/dep",departmentRouter)
 app.use("/course",courseRouter)
 app.use("/student",studentRouter)
 app.use("/hod",hodRouter)
+app.use("/staff",staffRouter)
 
 
 app.listen(3001,()=>{

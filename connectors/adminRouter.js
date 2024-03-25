@@ -5,7 +5,6 @@ const Student = require("../models/studentModel");
 
 const router = express.Router();
 
-
 //signin of Admin, Student, and Hod
 router.post("/signin", async (req, res) => {
   try {
@@ -18,6 +17,7 @@ router.post("/signin", async (req, res) => {
         return res.json({
           status: "success",
           message: "Admin login success",
+          data: adminData,
         });
       } else {
         return res.json({
@@ -33,6 +33,7 @@ router.post("/signin", async (req, res) => {
         return res.json({
           status: "success",
           message: "Student login success",
+          data: studentData,
         });
       } else {
         return res.json({
@@ -47,7 +48,8 @@ router.post("/signin", async (req, res) => {
       if (hodData.password === inputPassword) {
         return res.json({
           status: "success",
-          message: "HOD login success",
+          message: "Hod login success",
+          data: hodData,
         });
       } else {
         return res.json({

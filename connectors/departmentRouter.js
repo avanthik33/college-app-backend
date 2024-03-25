@@ -8,12 +8,21 @@ const router = express.Router();
 router.post("/addDep", async (req, res) => {
   try {
     let data = req.body;
-    let newDep = new Department(data);
-    await newDep.save();
-    res.json({
-      status: "success",
-      message: "successfully added department",
-    });
+    let department = data.department;
+    let match = await Department.findOne({ department: department });
+    if (!match) {
+      let newDep = new Department(data);
+      await newDep.save();
+      res.json({
+        status: "success",
+        message: "successfully added department",
+      });
+    }else{
+      res.json({
+        status:"error",
+        message:"department already exist"
+      })
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({
