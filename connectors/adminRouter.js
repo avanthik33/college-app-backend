@@ -3,6 +3,7 @@ const Hod = require("../models/hodModel");
 const Admin = require("../models/adminModel");
 const Student = require("../models/studentModel");
 const Staff = require("../models/staffModel");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -15,11 +16,26 @@ router.post("/signin", async (req, res) => {
     let adminData = await Admin.findOne({ email: inputEmail });
     if (adminData) {
       if (adminData.password === inputPassword) {
-        return res.json({
-          status: "success",
-          message: "Admin login success",
-          data: adminData,
-        });
+        jwt.sign(
+          { email: inputEmail, id: adminData._id },
+          "collegeApp",
+          { expiresIn: "2h" },
+          (error, token) => {
+            if (error) {
+              res.json({
+                status: "error",
+                message: "Error signing token",
+              });
+            } else {
+              res.json({
+                status: "success",
+                message: "Admin login success",
+                data: adminData,
+                token: token,
+              });
+            }
+          }
+        );
       } else {
         return res.json({
           status: "error",
@@ -31,27 +47,26 @@ router.post("/signin", async (req, res) => {
     let studentData = await Student.findOne({ email: inputEmail });
     if (studentData) {
       if (studentData.password === inputPassword) {
-        return res.json({
-          status: "success",
-          message: "Student login success",
-          data: studentData,
-        });
-      } else {
-        return res.json({
-          status: "error",
-          message: "Password is not correct",
-        });
-      }
-    }
-
-    let hodData = await Hod.findOne({ email: inputEmail });
-    if (hodData) {
-      if (hodData.password === inputPassword) {
-        return res.json({
-          status: "success",
-          message: "Hod login success",
-          data: hodData,
-        });
+        jwt.sign(
+          { email: inputEmail, id: studentData._id },
+          "collegeApp",
+          { expiresIn: "2h" },
+          (error, token) => {
+            if (error) {
+              res.json({
+                status: "error",
+                message: "error signin token",
+              });
+            } else {
+              res.json({
+                status: "success",
+                message: "Student login success",
+                data: studentData,
+                token: token,
+              });
+            }
+          }
+        );
       } else {
         return res.json({
           status: "error",
@@ -62,11 +77,58 @@ router.post("/signin", async (req, res) => {
     let staffData = await Staff.findOne({ email: inputEmail });
     if (staffData) {
       if (staffData.password === inputPassword) {
-        return res.json({
-          status: "success",
-          message: "Staff login success",
-          data: staffData,
+        jwt.sign(
+          { email: inputEmail, id: staffData._id },
+          "collegeApp",
+          { expiresIn: "2h" },
+          (error, token) => {
+            if (error) {
+              res.json({
+                status: "error",
+                message: "error in signin token",
+                
+              });
+            } else {
+              res.json({
+                status: "success",
+                message: "Staff login success",
+                data: staffData,
+                token: token,
+              });
+            }
+          }
+        );
+      } else {
+        res.json({
+          status: "error",
+          message: "password is not correct",
         });
+      }
+    }
+
+    let hodData = await Hod.findOne({ email: inputEmail });
+    if (hodData) {
+      if (hodData.password === inputPassword) {
+        jwt.sign(
+          { email: inputEmail, id: hodData._id },
+          "collegeApp",
+          { expiresIn: "2h" },
+          (error, token) => {
+            if (error) {
+              res.json({
+                status: "error",
+                message: "error signin token",
+              });
+            } else {
+              res.json({
+                status: "success",
+                message: "Hod login success",
+                data: hodData,
+                token: token,
+              });
+            }
+          }
+        );
       } else {
         return res.json({
           status: "error",
@@ -74,10 +136,6 @@ router.post("/signin", async (req, res) => {
         });
       }
     }
-    return res.json({
-      status: "error",
-      message: "No user found",
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
