@@ -31,4 +31,29 @@ router.post("/addSub", async (req, res) => {
   }
 });
 
+//view all subject
+router.get("/viewall", async (req, res) => {
+  try {
+    const data = await Subject.find()
+      .populate({
+        path: "course_id",
+        select: "-_id -__v",
+        populate: {
+          path: "department_id",
+          select: "-_id -__v",
+        },
+      })
+      .exec();
+    res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in add subject",
+    });
+  }
+});
 module.exports = router;
