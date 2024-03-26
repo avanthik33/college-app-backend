@@ -31,4 +31,22 @@ router.post("/addStaff", async (req, res) => {
   }
 });
 
+//view all staff
+router.get("/viewall", async (req, res) => {
+  try {
+    let data = await Staff.find()
+      .populate("department_id", "-description -_id -__v")
+      .exec();
+    res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in staff add by hod",
+    });
+  }
+});
 module.exports = router;

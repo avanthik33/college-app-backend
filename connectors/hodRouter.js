@@ -31,4 +31,24 @@ router.post("/addHod", async (req, res) => {
   }
 });
 
+//view hod's department by hod id
+router.get("/view/:id", async (req, res) => {
+  try {
+    let hodId = req.params.id;
+    let data = await Hod.findOne({ _id: hodId })
+      .populate("department_id", "-description -_id -__v")
+      .exec();
+    res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in view department by hod id",
+    });
+  }
+});
+
 module.exports = router;
