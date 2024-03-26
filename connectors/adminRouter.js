@@ -2,10 +2,11 @@ const express = require("express");
 const Hod = require("../models/hodModel");
 const Admin = require("../models/adminModel");
 const Student = require("../models/studentModel");
+const Staff = require("../models/staffModel");
 
 const router = express.Router();
 
-//signin of Admin, Student, and Hod
+//signin of Admin, Student, Hod and Staff
 router.post("/signin", async (req, res) => {
   try {
     let input = req.body;
@@ -50,6 +51,21 @@ router.post("/signin", async (req, res) => {
           status: "success",
           message: "Hod login success",
           data: hodData,
+        });
+      } else {
+        return res.json({
+          status: "error",
+          message: "Password is not correct",
+        });
+      }
+    }
+    let staffData = await Staff.findOne({ email: inputEmail });
+    if (staffData) {
+      if (staffData.password === inputPassword) {
+        return res.json({
+          status: "success",
+          message: "Staff login success",
+          data: staffData,
         });
       } else {
         return res.json({
