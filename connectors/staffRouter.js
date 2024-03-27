@@ -15,6 +15,14 @@ router.post("/addStaff", async (req, res) => {
         });
       } else {
         let input = req.body;
+        let id=input.idNumber
+        let match2=await Staff.findOne({idNumber:id})
+        if(match2){
+          res.json({
+            status:"error",
+            message:"Id already exist"
+          })
+        }
         let inputEmail = input.email;
         let data = await Staff.findOne({ email: inputEmail });
         if (!data) {
