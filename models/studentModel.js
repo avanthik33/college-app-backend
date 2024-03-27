@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 
 const Student = new mongoose.Schema({
+  staff_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Staffs",
+    required: true,
+  },
+  idNumber: {
+    type: Number,
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,
