@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 
 const Hod = new mongoose.Schema({
+  admin_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admins",
+    required: true,
+  },
+  idNumber: {
+    type: Number,
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,

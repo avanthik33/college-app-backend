@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-//adding student by admin
+//adding student by staff
 router.post("/addStudent", async (req, res) => {
   try {
     const token = req.headers["token"];
@@ -16,6 +16,14 @@ router.post("/addStudent", async (req, res) => {
         });
       } else {
         let data = req.body;
+        let id = data.idNumber;
+        let match2 = await Student.findOne({ idNumber: id });
+        if (match2) {
+          res.json({
+            status: "error",
+            message: "Id already exist",
+          });
+        }
         let existStudent = data.email;
         let match = await Student.findOne({ email: existStudent });
         if (!match) {

@@ -16,6 +16,14 @@ router.post("/addHod", async (req, res) => {
         });
       } else {
         let data = req.body;
+        let id = data.idNumber;
+        let match2 = await Hod.findOne({ idNumber: id });
+        if (match2) {
+          res.json({
+            status: "error",
+            message: "ID already exist",
+          });
+        }
         let existHod = data.email;
         let match = await Hod.findOne({ email: existHod });
         if (!match) {
