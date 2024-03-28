@@ -54,7 +54,7 @@ router.get("/viewall", async (req, res) => {
         });
       } else {
         let data = await Course.find()
-          .populate("department_id", "-_id -__v -description")
+          .populate("department_id", "-_id -__v ")
           .exec();
         res.json({
           status: "success",
