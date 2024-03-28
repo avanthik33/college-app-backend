@@ -17,4 +17,12 @@ const Course = new mongoose.Schema({
   },
 });
 
+
+Course.pre("remove", async function(next) {
+    await this.model("Courses").deleteMany({ admin_id: this.admin_id });
+    await this.model("Courses").deleteMany({ department_id: this.department_id });
+    next();
+});
+
+
 module.exports = mongoose.model("Courses", Course);
