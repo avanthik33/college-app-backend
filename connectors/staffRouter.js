@@ -15,13 +15,13 @@ router.post("/addStaff", async (req, res) => {
         });
       } else {
         let input = req.body;
-        let id=input.idNumber
-        let match2=await Staff.findOne({idNumber:id})
-        if(match2){
+        let id = input.idNumber;
+        let match2 = await Staff.findOne({ idNumber: id });
+        if (match2) {
           res.json({
-            status:"error",
-            message:"Id already exist"
-          })
+            status: "error",
+            message: "Id already exist",
+          });
         }
         let inputEmail = input.email;
         let data = await Staff.findOne({ email: inputEmail });
@@ -77,4 +77,47 @@ router.get("/viewall", async (req, res) => {
     });
   }
 });
+
+//search Staff
+router.post("/search", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "Unauthorized user",
+        });
+      } else {
+        const { firstName, idNumber } = req.body;
+        let data = await Staff.findOne({ firstName })
+          .populate("department_id")
+          .exec();
+        if (!data) {
+          data = await Staff.findOne({ idNumber: idNumber })
+            .populate("department_id")
+            .exec();
+        }
+        if (data) {
+          return res.json({
+            status: "success",
+            data: data,
+          });
+        } else {
+          return res.json({
+            status: "error",
+            message: "No data found",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Error in search Staff:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Something went wrong in search Staff",
+    });
+  }
+});
+
 module.exports = router;

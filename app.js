@@ -15,14 +15,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
-  if (res.headersSent) {
-    return next(err);
-  }
-  res.status(500).json({ error: "Internal Server Error" });
-};
-app.use(errorHandler);
 
 mongoose.connect(
   "mongodb+srv://avanthik:avanthik@cluster0.yuxak7x.mongodb.net/CollegeDb?retryWrites=true&w=majority&appName=Cluster0",

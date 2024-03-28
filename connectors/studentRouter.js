@@ -50,6 +50,4 @@ router.post("/addStudent", async (req, res) => {
   }
 });
 
-//student need to update password
-
 module.exports = router;

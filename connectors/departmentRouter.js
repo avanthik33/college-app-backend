@@ -49,7 +49,9 @@ router.get("/viewAll", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (decoded) {
-        let data = await Department.find();
+        let data = await Department.find()
+          .populate("admin_id", "-_id -__v -password")
+          .exec();
         res.json({
           status: "success",
           depData: data,
@@ -70,4 +72,99 @@ router.get("/viewAll", async (req, res) => {
   }
 });
 
+//delete department by id by admin
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let id = req.params.id;
+        let data = await Department.findByIdAndDelete(id);
+        res.json({
+          status: "success",
+          message: "successfully deleted",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went worng in delete department",
+    });
+  }
+});
+
+//edit department by id
+router.put("/edit/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        const id = req.params.id;
+        let input=req.body
+        if(!input){
+          res.json({
+            status:"error",
+            message:"No input data Found"
+          })
+        }
+        let inputDepartment = req.body.department;
+        let inputDescription = req.body.description;
+        let data = await Department.findById(id);
+        data.department = inputDepartment;
+        data.description = inputDescription;
+        await data.save();
+        res.json({
+          status: "success",
+          message: "successfully updated",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in edit department",
+    });
+  }
+});
+
+//view department by id
+router.get("/view/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let id = req.params.id;
+        let data = await Department.findById(id);
+        res.json({
+          status: "success",
+          data: data,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in veiw department by id",
+    });
+  }
+});
 module.exports = router;
