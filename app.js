@@ -15,11 +15,20 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-
-mongoose.connect(
-  "mongodb+srv://avanthik:avanthik@cluster0.yuxak7x.mongodb.net/CollegeDb?retryWrites=true&w=majority&appName=Cluster0",
-  { useNewUrlParser: true }
-);
+mongoose
+  .connect(
+    "mongodb+srv://avanthik:avanthik@cluster0.yuxak7x.mongodb.net/CollegeDb?retryWrites=true&w=majority&appName=Cluster0",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
 
 app.use("/admin", adminRouter);
 app.use("/dep", departmentRouter);

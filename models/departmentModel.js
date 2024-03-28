@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Course = require("../models/courseModel");
 
 const Department = new mongoose.Schema({
   admin_id: {
@@ -15,8 +16,5 @@ const Department = new mongoose.Schema({
     required: true,
   },
 });
-
-
-
 
 module.exports = mongoose.model("Departments", Department);
