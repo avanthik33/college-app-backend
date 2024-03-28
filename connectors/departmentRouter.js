@@ -1,7 +1,7 @@
 const express = require("express");
 const Department = require("../models/departmentModel");
-const { find } = require("../models/hodModel");
 const jwt = require("jsonwebtoken");
+const Course=require("../models/courseModel")
 
 const router = express.Router();
 
@@ -72,7 +72,7 @@ router.get("/viewAll", async (req, res) => {
   }
 });
 
-//delete department by id by admin
+//delete department by id
 router.delete("/delete/:id", async (req, res) => {
   try {
     const token = req.headers["token"];
@@ -80,14 +80,23 @@ router.delete("/delete/:id", async (req, res) => {
       if (error) {
         res.json({
           status: "error",
-          message: "unautherized user",
+          message: "unauthorized user",
         });
       } else {
         let id = req.params.id;
-        let data = await Department.findByIdAndDelete(id);
+        const department = await Department.findById(id);
+        if (!department) {
+          res.status(404).json({
+            status: "error",
+            message: "Department not found",
+          });
+          return;
+        }
+        await Course.deleteMany({ department_id: department._id });
+        await department.deleteOne();
         res.json({
           status: "success",
-          message: "successfully deleted",
+          message: "Department deleted",
         });
       }
     });
@@ -95,7 +104,7 @@ router.delete("/delete/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({
       status: "error",
-      message: "somthing went worng in delete department",
+      message: "Something went wrong in delete department",
     });
   }
 });
@@ -112,12 +121,12 @@ router.put("/edit/:id", async (req, res) => {
         });
       } else {
         const id = req.params.id;
-        let input=req.body
-        if(!input){
+        let input = req.body;
+        if (!input) {
           res.json({
-            status:"error",
-            message:"No input data Found"
-          })
+            status: "error",
+            message: "No input data Found",
+          });
         }
         let inputDepartment = req.body.department;
         let inputDescription = req.body.description;
