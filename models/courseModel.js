@@ -17,6 +17,17 @@ const Course = new mongoose.Schema({
   },
 });
 
-
+Course.pre("deleteOne", async function (next) {
+  try {
+    const courseId = this.getQuery()._id;
+    const Student = mongoose.model("Students");
+    const Subject = mongoose.model("Subjects");
+    await Student.deleteMany({ course_id: courseId });
+    await Subject.deleteMany({ course_id: courseId });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model("Courses", Course);
