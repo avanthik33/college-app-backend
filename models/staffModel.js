@@ -47,4 +47,17 @@ const Staff = new mongoose.Schema({
     required: true,
   },
 });
+
+Staff.pre("deleteOne", async function (next) {
+  try {
+    const staffId = this.getQuery()._id;
+    const Student = mongoose.model("Students");
+    const SubjectAllocation = mongoose.model("SubjectAllocations");
+    await Student.deleteMany({ staff_id: staffId });
+    await SubjectAllocation.deleteMany({ staff_id: staffId });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = mongoose.model("Staffs", Staff);

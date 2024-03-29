@@ -1,7 +1,9 @@
 const express = require("express");
 const Department = require("../models/departmentModel");
 const jwt = require("jsonwebtoken");
-const Course=require("../models/courseModel")
+const Course = require("../models/courseModel");
+const Hod = require("../models/hodModel");
+const Staff = require("../models/staffModel");
 
 const router = express.Router();
 
@@ -92,7 +94,6 @@ router.delete("/delete/:id", async (req, res) => {
           });
           return;
         }
-        await Course.deleteMany({ department_id: department._id });
         await department.deleteOne();
         res.json({
           status: "success",

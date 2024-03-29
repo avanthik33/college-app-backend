@@ -11,4 +11,15 @@ const Subject = new mongoose.Schema({
     required: true,
   },
 });
+
+Subject.pre("deleteOne", async function (next) {
+  try {
+    const subjectId = this.getQuery()._id;
+    const SubjectAllocation = mongoose.model("SubjectAllocations");
+    await SubjectAllocation.deleteMany({ subject_id: subjectId });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = mongoose.model("Subjects", Subject);
