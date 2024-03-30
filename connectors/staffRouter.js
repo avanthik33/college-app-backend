@@ -120,4 +120,74 @@ router.post("/search", async (req, res) => {
   }
 });
 
+//view staff by id
+router.get("/profile/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let id = req.params.id;
+        let data = await Staff.findById(id)
+          .populate("department_id", "-__v")
+          .exec();
+        res.json({
+          status: "success",
+          data: data,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({
+      status: "error",
+      message: "somthing went wrong in view staff",
+    });
+  }
+});
+
+//update staff by id
+router.put("/update/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unauthorized user",
+        });
+      } else {
+        const id = req.params.id;
+        const input = req.body;
+
+        const updatedData = await Staff.findOneAndUpdate(
+          { _id: id },
+          { $set: input },
+          { new: true } 
+        );
+        if (!updatedData) {
+          return res.json({
+            status: "error",
+            message: "no data found",
+          });
+        }
+        return res.json({
+          status: "success",
+          message:"successfully updated",
+          data: updatedData,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "something went wrong in update staff",
+    });
+  }
+});
 module.exports = router;
