@@ -50,4 +50,48 @@ router.post("/addStudent", async (req, res) => {
   }
 });
 
+router.post("/viewByDep", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.status(401).json({
+          status: "error",
+          message: "Unauthorized user",
+        });
+      } else {
+        const input = req.body.departmentId;
+        const students = await Student.find()
+          .populate({
+            path: "course_id",
+            match: { department_id: input }, 
+          })
+          .exec();
+
+        const filteredStudents = students.filter(
+          (student) => student.course_id !== null
+        ); 
+
+        if (filteredStudents.length === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: "No students found for the given department",
+          });
+        }
+
+        return res.status(200).json({
+          status: "success",
+          data: filteredStudents,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Something went wrong in view student by department",
+    });
+  }
+});
+
 module.exports = router;

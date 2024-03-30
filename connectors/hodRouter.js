@@ -149,4 +149,46 @@ router.get("/viewAll", async (req, res) => {
   }
 });
 
+//update hod
+router.put("/profile/:id", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let id = req.params.id;
+        let input = req.body;
+
+        const updatedData = await Hod.findOneAndUpdate(
+          { _id: id },
+          { $set: input },
+          { new: true }
+        );
+
+        if (!updatedData) {
+          return res.status(404).json({
+            status: "error",
+            message: "No data found",
+          });
+        }
+        res.json({
+          status: "success",
+          message: "successfully updated",
+          data: updatedData,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in update hod",
+    });
+  }
+});
+
 module.exports = router;
