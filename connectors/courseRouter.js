@@ -71,4 +71,23 @@ router.get("/viewall", async (req, res) => {
   }
 });
 
+//view all course in the department
+router.post("/viewCourseByDep", async (req, res) => {
+  try {
+    let depId = req.body.department_id;
+    let data = await Course.find({ department_id: depId });
+    return res.json({
+      status: "error",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
