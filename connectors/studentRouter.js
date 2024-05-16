@@ -1,6 +1,6 @@
 const express = require("express");
-const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
+const Student = require("../models/studentModel");
 
 const router = express.Router();
 
@@ -50,6 +50,7 @@ router.post("/addStudent", async (req, res) => {
   }
 });
 
+//view all student by department
 router.post("/viewByDep", async (req, res) => {
   try {
     const token = req.headers["token"];
@@ -64,13 +65,13 @@ router.post("/viewByDep", async (req, res) => {
         const students = await Student.find()
           .populate({
             path: "course_id",
-            match: { department_id: input }, 
+            match: { department_id: input },
           })
           .exec();
 
         const filteredStudents = students.filter(
           (student) => student.course_id !== null
-        ); 
+        );
 
         if (filteredStudents.length === 0) {
           return res.status(404).json({
@@ -90,6 +91,25 @@ router.post("/viewByDep", async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Something went wrong in view student by department",
+    });
+  }
+});
+
+//view students by course
+router.post("/viewStudByCourse", async (req, res) => {
+  try {
+    const  course_id  = req.body.course_id;
+    const students = await Student.find({ course_id: course_id });
+    return res.status(200).json({
+      status: "success",
+      data: students,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+      error: error.message,
     });
   }
 });

@@ -10,6 +10,7 @@ const hodRouter = require("./connectors/hodRouter");
 const staffRouter = require("./connectors/staffRouter");
 const subjectRouter = require("./connectors/subjectRouter");
 const subjectAllocationRouter = require("./connectors/subjectAllocationRouter");
+const absentRouter=require("./connectors/absentRouter")
 
 const app = express();
 app.use(express.json());
@@ -20,7 +21,6 @@ mongoose
     "mongodb+srv://avanthik:avanthik@cluster0.yuxak7x.mongodb.net/CollegeDb?retryWrites=true&w=majority&appName=Cluster0",
     {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
     }
   )
   .then(() => {
@@ -38,6 +38,8 @@ app.use("/hod", hodRouter);
 app.use("/staff", staffRouter);
 app.use("/subject", subjectRouter);
 app.use("/subAllocation", subjectAllocationRouter);
+app.use("/absent", absentRouter);
+
 
 app.listen(3001, () => {
   console.log("server is running..");
