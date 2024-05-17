@@ -56,4 +56,23 @@ router.post("/viewAbsentees", async (req, res) => {
     });
   }
 });
+
+//view absent details of one student
+router.post("/viewAbsent", async (req, res) => {
+  try {
+    let studentId = req.body.id;
+    let data = await absentModel.find({ absentStudents: studentId });
+    return res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+      error: error.message,
+    });
+  }
+});
 module.exports = router;
