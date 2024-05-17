@@ -98,11 +98,21 @@ router.post("/viewByDep", async (req, res) => {
 //view students by course
 router.post("/viewStudByCourse", async (req, res) => {
   try {
-    const course_id = req.body.course_id;
-    const students = await Student.find({ course_id: course_id });
-    return res.status(200).json({
-      status: "success",
-      data: students,
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "errro",
+          message: "unautherized user",
+        });
+      } else {
+        const course_id = req.body.course_id;
+        const students = await Student.find({ course_id: course_id });
+        return res.status(200).json({
+          status: "success",
+          data: students,
+        });
+      }
     });
   } catch (error) {
     console.error(error);
@@ -117,13 +127,23 @@ router.post("/viewStudByCourse", async (req, res) => {
 //search Student by firstName
 router.post("/searchStudentByName", async (req, res) => {
   try {
-    let name = req.body.name;
-    let data = await Student.findOne({ firstName: name })
-      .populate("course_id")
-      .exec();
-    return res.json({
-      status: "success",
-      data: data,
+    const token = req.header["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let name = req.body.name;
+        let data = await Student.findOne({ firstName: name })
+          .populate("course_id")
+          .exec();
+        return res.json({
+          status: "success",
+          data: data,
+        });
+      }
     });
   } catch (error) {
     console.error(error);
