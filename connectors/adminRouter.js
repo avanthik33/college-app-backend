@@ -13,7 +13,7 @@ router.get("/profile/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -26,7 +26,7 @@ router.get("/profile/:id", async (req, res) => {
             message: "No data found",
           });
         }
-        res.status(200).json({
+        return res.status(200).json({
           status: "success",
           data: data,
         });
@@ -34,7 +34,7 @@ router.get("/profile/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in admin details",
     });
@@ -47,7 +47,7 @@ router.put("/update/:id", async (req, res) => {
     let token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -61,16 +61,16 @@ router.put("/update/:id", async (req, res) => {
           });
         }
         let data = await Admin.findById(id);
-        if(!data || data.length===0){
+        if (!data || data.length === 0) {
           return res.status(404).json({
-            status:"error",
-            message:"no data found"
-          })
+            status: "error",
+            message: "no data found",
+          });
         }
         data.email = input.email;
         data.password = input.password;
         await data.save();
-        res.status(200).json({
+        return res.status(200).json({
           status: "success",
           message: "successfully updated data",
         });
@@ -78,7 +78,7 @@ router.put("/update/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in update admin details",
     });
@@ -110,12 +110,12 @@ router.post("/signin", async (req, res) => {
           { expiresIn: "1d" },
           (error, token) => {
             if (error) {
-              res.json({
+              return res.json({
                 status: "error",
                 message: "Error signing token",
               });
             } else {
-              res.json({
+              return res.json({
                 status: "success",
                 message: "Admin login success",
                 data: adminData,
@@ -139,12 +139,12 @@ router.post("/signin", async (req, res) => {
           { expiresIn: "2h" },
           (error, token) => {
             if (error) {
-              res.json({
+              return res.json({
                 status: "error",
                 message: "error signin token",
               });
             } else {
-              res.json({
+              return res.json({
                 status: "success",
                 message: "Student login success",
                 data: studentData,
@@ -168,12 +168,12 @@ router.post("/signin", async (req, res) => {
           { expiresIn: "1d" },
           (error, token) => {
             if (error) {
-              res.json({
+              return res.json({
                 status: "error",
                 message: "error in signin token",
               });
             } else {
-              res.json({
+              return res.json({
                 status: "success",
                 message: "Staff login success",
                 data: staffData,
@@ -184,7 +184,7 @@ router.post("/signin", async (req, res) => {
           }
         );
       } else {
-        res.json({
+        return res.json({
           status: "error",
           message: "Incorrect Password",
         });
@@ -197,12 +197,12 @@ router.post("/signin", async (req, res) => {
           { expiresIn: "1d" },
           (error, token) => {
             if (error) {
-              res.json({
+              return res.json({
                 status: "error",
                 message: "error signin token",
               });
             } else {
-              res.json({
+              return res.json({
                 status: "success",
                 message: "Hod login success",
                 data: hodData,
@@ -219,14 +219,14 @@ router.post("/signin", async (req, res) => {
         });
       }
     } else {
-      res.json({
+      return res.json({
         status: "error",
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "internal server error",
       error: error.message,

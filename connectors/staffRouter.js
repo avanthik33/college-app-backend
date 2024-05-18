@@ -9,7 +9,7 @@ router.post("/addStaff", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -35,7 +35,7 @@ router.post("/addStaff", async (req, res) => {
         }
         let match2 = await Staff.findOne({ idNumber: id });
         if (match2) {
-          res.json({
+          return res.json({
             status: "error",
             message: "Id already exist",
           });
@@ -45,12 +45,12 @@ router.post("/addStaff", async (req, res) => {
         if (!data) {
           let newStaff = new Staff(input);
           await newStaff.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully added staff",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "staff is already exist",
           });
@@ -59,7 +59,7 @@ router.post("/addStaff", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in staff add by hod",
     });
@@ -72,7 +72,7 @@ router.get("/viewall", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unauthaized user",
         });
@@ -80,7 +80,7 @@ router.get("/viewall", async (req, res) => {
         let data = await Staff.find()
           .populate("department_id", "-description -_id -__v")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -88,7 +88,7 @@ router.get("/viewall", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in staff add by hod",
     });
@@ -143,7 +143,7 @@ router.get("/profile/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -152,7 +152,7 @@ router.get("/profile/:id", async (req, res) => {
         let data = await Staff.findById(id)
           .populate("department_id", "-__v")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -160,7 +160,7 @@ router.get("/profile/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.json({
+    return res.json({
       status: "error",
       message: "somthing went wrong in view staff",
     });
@@ -211,17 +211,53 @@ router.put("/update/:id", async (req, res) => {
 //total number of staffs
 router.get("/totalStaffs", async (req, res) => {
   try {
-    let data = await Staff.find();
-    let totalStaffs = data.length;
-    return res.json({
-      status: "success",
-      data: totalStaffs,
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let data = await Staff.find();
+        let totalStaffs = data.length;
+        return res.json({
+          status: "success",
+          data: totalStaffs,
+        });
+      }
     });
   } catch (error) {
     console.error(error);
     return res.json({
       status: "error",
       message: "something went wrong in update staff",
+    });
+  }
+});
+
+//delete staff
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    const existingData = await Staff.findById(id);
+    let data = await Staff.deleteOne({ email: existingData.email });
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    } else {
+      return res.json({
+        status: "success",
+        message: "successfully deleted",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
     });
   }
 });

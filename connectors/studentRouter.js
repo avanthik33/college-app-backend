@@ -10,7 +10,7 @@ router.post("/addStudent", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -19,7 +19,7 @@ router.post("/addStudent", async (req, res) => {
         let id = data.idNumber;
         let match2 = await Student.findOne({ idNumber: id });
         if (match2) {
-          res.json({
+          return res.json({
             status: "error",
             message: "Id already exist",
           });
@@ -29,12 +29,12 @@ router.post("/addStudent", async (req, res) => {
         if (!match) {
           let newStudent = new Student(data);
           await newStudent.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully added student",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "student already exist",
           });
@@ -43,7 +43,7 @@ router.post("/addStudent", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add student by admin",
     });

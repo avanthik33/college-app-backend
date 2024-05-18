@@ -48,5 +48,15 @@ const Student = new mongoose.Schema({
     required: true,
   },
 });
+Student.pre("deleteOne", async function (next) {
+  try {
+    const studentId = this.getQuery()._id;
+    const AbsentModel = mongoose.model("absentees");
+    await AbsentModel.deleteMany({ absentStudents: studentId });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model("Students", Student);

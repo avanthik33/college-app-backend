@@ -12,4 +12,6 @@ const SubjectAllocation = new mongoose.Schema({
     required: true,
   },
 });
+
+
 module.exports = mongoose.model("SubjectAllocations", SubjectAllocation);

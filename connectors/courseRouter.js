@@ -10,29 +10,29 @@ router.post("/add", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
       } else {
         let data = req.body;
         let course = data.course;
-        if(!data || !course){
+        if (!data || !course) {
           return res.status(400).json({
-            status:'error',
-            message:"no input data found"
-          })
+            status: "error",
+            message: "no input data found",
+          });
         }
         let match = await Course.findOne({ course: course });
         if (!match) {
           let newCourse = new Course(data);
           await newCourse.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully course added.",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "course already exist",
           });
@@ -41,7 +41,7 @@ router.post("/add", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add course",
     });
@@ -54,7 +54,7 @@ router.get("/viewall", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -62,7 +62,7 @@ router.get("/viewall", async (req, res) => {
         let data = await Course.find()
           .populate("department_id", "-_id -__v ")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           Courses: data,
         });
@@ -70,7 +70,7 @@ router.get("/viewall", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing error in view all courses",
     });
@@ -89,7 +89,9 @@ router.post("/viewCourseByDep", async (req, res) => {
         });
       } else {
         let depId = req.body.department_id;
-        let data = await Course.find({ department_id: depId });
+        let data = await Course.find({ department_id: depId })
+          .populate("department_id")
+          .exec();
         return res.json({
           status: "error",
           data: data,
