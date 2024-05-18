@@ -209,11 +209,21 @@ router.put("/profile/:id", async (req, res) => {
 //total hods
 router.get("/totalHods", async (req, res) => {
   try {
-    let data = await Hod.find();
-    let totalHods = data.length;
-    return res.json({
-      status: "success",
-      data: totalHods,
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let data = await Hod.find();
+        let totalHods = data.length;
+        return res.json({
+          status: "success",
+          data: totalHods,
+        });
+      }
     });
   } catch (error) {
     console.error(error);

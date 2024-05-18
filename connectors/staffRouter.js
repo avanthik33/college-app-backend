@@ -211,11 +211,21 @@ router.put("/update/:id", async (req, res) => {
 //total number of staffs
 router.get("/totalStaffs", async (req, res) => {
   try {
-    let data = await Staff.find();
-    let totalStaffs = data.length;
-    return res.json({
-      status: "success",
-      data: totalStaffs,
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let data = await Staff.find();
+        let totalStaffs = data.length;
+        return res.json({
+          status: "success",
+          data: totalStaffs,
+        });
+      }
     });
   } catch (error) {
     console.error(error);
