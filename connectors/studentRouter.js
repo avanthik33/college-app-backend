@@ -107,6 +107,12 @@ router.post("/viewStudByCourse", async (req, res) => {
         });
       } else {
         const course_id = req.body.course_id;
+        if (!course_id) {
+          return res.status(400).json({
+            status: "error",
+            message: "no input found",
+          });
+        }
         const students = await Student.find({ course_id: course_id });
         return res.status(200).json({
           status: "success",

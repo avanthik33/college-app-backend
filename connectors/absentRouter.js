@@ -16,7 +16,7 @@ router.post("/addAbsent", async (req, res) => {
         });
       } else {
         const input = req.body.absentees;
-        if (!input) {
+        if ( !input.staff || !input.period) {
           return res.status(400).json({
             status: "error",
             message: "inputs can not be null",
