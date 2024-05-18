@@ -20,7 +20,13 @@ router.get("/profile/:id", async (req, res) => {
       } else {
         const id = req.params.id;
         let data = await Admin.findById(id);
-        res.json({
+        if (!data || data.length === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: "No data found",
+          });
+        }
+        res.status(200).json({
           status: "success",
           data: data,
         });
@@ -48,11 +54,23 @@ router.put("/update/:id", async (req, res) => {
       } else {
         let id = req.params.id;
         let input = req.body;
+        if (!input.email && !input.password) {
+          return res.status(400).json({
+            status: "error",
+            message: "Email and password cannot be null",
+          });
+        }
         let data = await Admin.findById(id);
+        if(!data || data.length===0){
+          return res.status(404).json({
+            status:"error",
+            message:"no data found"
+          })
+        }
         data.email = input.email;
         data.password = input.password;
         await data.save();
-        res.json({
+        res.status(200).json({
           status: "success",
           message: "successfully updated data",
         });
@@ -73,7 +91,12 @@ router.post("/signin", async (req, res) => {
     let input = req.body;
     let inputEmail = input.email;
     let inputPassword = input.password;
-
+    if (!inputEmail || !inputPassword) {
+      return res.status(400).json({
+        status: "error",
+        message: "Inputs can not be null",
+      });
+    }
     let adminData = await Admin.findOne({ email: inputEmail });
     let studentData = await Student.findOne({ email: inputEmail });
     let staffData = await Staff.findOne({ email: inputEmail });
@@ -198,14 +221,15 @@ router.post("/signin", async (req, res) => {
     } else {
       res.json({
         status: "error",
-        message: "no user found",
+        message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({
       status: "error",
-      message: "Something went wrong in signin",
+      message: "internal server error",
+      error: error.message,
     });
   }
 });

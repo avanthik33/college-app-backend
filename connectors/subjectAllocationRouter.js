@@ -16,6 +16,12 @@ router.post("/allocate", async (req, res) => {
         });
       } else {
         let data = req.body;
+        if(!data.staff_id || !data.subject_id){
+          return res.status(400).json({
+            status:"error",
+            message:"input is not found"
+          })
+        }
         let newSubAllocation = new SubjectAllocation(data);
         await newSubAllocation.save();
         res.json({

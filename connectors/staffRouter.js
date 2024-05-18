@@ -16,6 +16,23 @@ router.post("/addStaff", async (req, res) => {
       } else {
         let input = req.body;
         let id = input.idNumber;
+        if (
+          !input.idNumber ||
+          !input.firstName ||
+          !input.lastName ||
+          !input.gender ||
+          !input.dob ||
+          !input.qualification ||
+          !input.address ||
+          !input.email ||
+          !input.phone ||
+          !input.password
+        ) {
+          return res.status(400).json({
+            status: "error",
+            message: "input not found",
+          });
+        }
         let match2 = await Staff.findOne({ idNumber: id });
         if (match2) {
           res.json({
@@ -167,7 +184,7 @@ router.put("/update/:id", async (req, res) => {
         const updatedData = await Staff.findOneAndUpdate(
           { _id: id },
           { $set: input },
-          { new: true } 
+          { new: true }
         );
         if (!updatedData) {
           return res.json({
@@ -177,10 +194,28 @@ router.put("/update/:id", async (req, res) => {
         }
         return res.json({
           status: "success",
-          message:"successfully updated",
+          message: "successfully updated",
           data: updatedData,
         });
       }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "something went wrong in update staff",
+    });
+  }
+});
+
+//total number of staffs
+router.get("/totalStaffs", async (req, res) => {
+  try {
+    let data = await Staff.find();
+    let totalStaffs = data.length;
+    return res.json({
+      status: "success",
+      data: totalStaffs,
     });
   } catch (error) {
     console.error(error);

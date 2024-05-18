@@ -17,6 +17,12 @@ router.post("/add", async (req, res) => {
       } else {
         let data = req.body;
         let course = data.course;
+        if(!data || !course){
+          return res.status(400).json({
+            status:'error',
+            message:"no input data found"
+          })
+        }
         let match = await Course.findOne({ course: course });
         if (!match) {
           let newCourse = new Course(data);
@@ -74,11 +80,21 @@ router.get("/viewall", async (req, res) => {
 //view all course in the department
 router.post("/viewCourseByDep", async (req, res) => {
   try {
-    let depId = req.body.department_id;
-    let data = await Course.find({ department_id: depId });
-    return res.json({
-      status: "error",
-      data: data,
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let depId = req.body.department_id;
+        let data = await Course.find({ department_id: depId });
+        return res.json({
+          status: "error",
+          data: data,
+        });
+      }
     });
   } catch (error) {
     console.error(error);

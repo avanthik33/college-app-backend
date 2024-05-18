@@ -17,6 +17,12 @@ router.post("/addSub", async (req, res) => {
       } else {
         let data = req.body;
         let existingSub = data.Subject;
+        if (!Subject || !data.course_id) {
+          return res.status(400).json({
+            status: "error",
+            message: "input not found",
+          });
+        }
         let match = await Subject.findOne({ subject: existingSub });
         if (!match) {
           let newSubject = new Subject(data);
