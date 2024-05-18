@@ -235,4 +235,30 @@ router.get("/totalStaffs", async (req, res) => {
     });
   }
 });
+
+//delete staff
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    const existingData = await Staff.findById(id);
+    let data = await Staff.deleteOne({ email: existingData.email });
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    } else {
+      return res.json({
+        status: "success",
+        message: "successfully deleted",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+    });
+  }
+});
 module.exports = router;

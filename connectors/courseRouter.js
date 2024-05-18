@@ -17,11 +17,11 @@ router.post("/add", async (req, res) => {
       } else {
         let data = req.body;
         let course = data.course;
-        if(!data || !course){
+        if (!data || !course) {
           return res.status(400).json({
-            status:'error',
-            message:"no input data found"
-          })
+            status: "error",
+            message: "no input data found",
+          });
         }
         let match = await Course.findOne({ course: course });
         if (!match) {
@@ -89,7 +89,9 @@ router.post("/viewCourseByDep", async (req, res) => {
         });
       } else {
         let depId = req.body.department_id;
-        let data = await Course.find({ department_id: depId });
+        let data = await Course.find({ department_id: depId })
+          .populate("department_id")
+          .exec();
         return res.json({
           status: "error",
           data: data,

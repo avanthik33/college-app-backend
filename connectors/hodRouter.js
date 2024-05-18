@@ -177,7 +177,20 @@ router.put("/profile/:id", async (req, res) => {
       } else {
         let id = req.params.id;
         let input = req.body;
-
+        if (
+          !input.firstName ||
+          !input.lastName ||
+          !input.gender ||
+          !input.qualification ||
+          !input.email ||
+          !input.phoneNo ||
+          !input.password
+        ) {
+          return res.status(400).json({
+            status: "error",
+            message: "input not found",
+          });
+        }
         const updatedData = await Hod.findOneAndUpdate(
           { _id: id },
           { $set: input },
