@@ -127,7 +127,7 @@ router.post("/viewStudByCourse", async (req, res) => {
 //search Student by firstName
 router.post("/searchStudentByName", async (req, res) => {
   try {
-    const token = req.header["token"];
+    const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
         return res.json({
@@ -139,6 +139,12 @@ router.post("/searchStudentByName", async (req, res) => {
         let data = await Student.findOne({ firstName: name })
           .populate("course_id")
           .exec();
+        if (!data) {
+          return res.status(400).json({
+            status: "error",
+            messsage: "no data found",
+          });
+        }
         return res.json({
           status: "success",
           data: data,
@@ -151,6 +157,34 @@ router.post("/searchStudentByName", async (req, res) => {
       status: "error",
       message: "internal server error",
       error: error.message,
+    });
+  }
+});
+
+//total student finder
+router.get("/totalStudents", async (req, res) => {
+  try {
+    const token = req.headers["token"];
+    jwt.verify(token, "collegeApp", async (error, decoded) => {
+      if (error) {
+        return res.json({
+          status: "error",
+          message: "unautherized user",
+        });
+      } else {
+        let data = await Student.find();
+        let totalStudents = data.length;
+        return res.json({
+          status: "success",
+          data: totalStudents,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: "error",
+      message: "internal server error",
     });
   }
 });

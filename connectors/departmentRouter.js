@@ -15,6 +15,13 @@ router.post("/addDep", async (req, res) => {
       if (decoded) {
         let data = req.body;
         let department = data.department;
+        let description=data.description
+        if (!description || !department) {
+          return res.status(400).json({
+            status: "error",
+            message: "input not found",
+          });
+        }
         let match = await Department.findOne({ department: department });
         if (!match) {
           let newDep = new Department(data);

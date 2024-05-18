@@ -17,6 +17,12 @@ router.post("/add", async (req, res) => {
       } else {
         let data = req.body;
         let course = data.course;
+        if(!data || !course){
+          return res.status(400).json({
+            status:'error',
+            message:"no input data found"
+          })
+        }
         let match = await Course.findOne({ course: course });
         if (!match) {
           let newCourse = new Course(data);

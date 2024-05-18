@@ -16,6 +16,12 @@ router.post("/addAbsent", async (req, res) => {
         });
       } else {
         const input = req.body.absentees;
+        if (!input) {
+          return res.status(400).json({
+            status: "error",
+            message: "inputs can not be null",
+          });
+        }
         const newAbsent = new absentModel(input);
         await newAbsent.save();
         return res.json({
@@ -34,7 +40,7 @@ router.post("/addAbsent", async (req, res) => {
   }
 });
 
-//view absent students by date
+//view absent students by date and course
 router.post("/viewAbsentees", async (req, res) => {
   try {
     const token = req.headers["token"];
@@ -46,6 +52,13 @@ router.post("/viewAbsentees", async (req, res) => {
         });
       } else {
         const inputDate = new Date(req.body.date);
+        const courseId = req.body.course_id;
+        if (!inputDate || !courseId) {
+          return res.status(400).json({
+            status: "error",
+            message: "inputs can not be null",
+          });
+        }
         if (isNaN(inputDate)) {
           return res.status(400).json({
             status: "error",
@@ -61,10 +74,20 @@ router.post("/viewAbsentees", async (req, res) => {
               $lte: endOfDay,
             },
           })
-          .populate("staff absentStudents");
+          .populate({
+            path: "absentStudents",
+            match: { course_id: courseId },
+          })
+          .populate("staff")
+          .exec();
+
+        // Filter out documents where the absentStudents array is empty
+        const filteredData = data.filter(
+          (item) => item.absentStudents.length > 0
+        );
         return res.status(200).json({
           status: "success",
-          data: data,
+          data: filteredData,
         });
       }
     });
@@ -90,7 +113,19 @@ router.post("/viewAbsent", async (req, res) => {
         });
       } else {
         let studentId = req.body.id;
+        if (!studentId) {
+          return res.status(400).json({
+            status: "error",
+            message: "inputs can not be null",
+          });
+        }
         let data = await absentModel.find({ absentStudents: studentId });
+        if (!data || data.length === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: "no data found",
+          });
+        }
         return res.json({
           status: "success",
           data: data,

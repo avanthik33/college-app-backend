@@ -10,13 +10,28 @@ router.post("/addHod", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        res.status(401).json({
           status: "error",
           message: "unautharised user",
         });
       } else {
         let data = req.body;
         let id = data.idNumber;
+        if (
+          !data.idNumber ||
+          !data.firstName ||
+          !data.lastName ||
+          !data.gender ||
+          !data.qualification ||
+          data.email ||
+          data.phoneNo ||
+          data.password
+        ) {
+          return res.status(400).json({
+            status: "error",
+            message: "input not found",
+          });
+        }
         let match2 = await Hod.findOne({ idNumber: id });
         if (match2) {
           res.json({
@@ -181,6 +196,24 @@ router.put("/profile/:id", async (req, res) => {
           data: updatedData,
         });
       }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "somthing went wrong in update hod",
+    });
+  }
+});
+
+//total hods
+router.get("/totalHods", async (req, res) => {
+  try {
+    let data = await Hod.find();
+    let totalHods = data.length;
+    return res.json({
+      status: "success",
+      data: totalHods,
     });
   } catch (error) {
     console.error(error);
