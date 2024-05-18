@@ -10,7 +10,7 @@ router.post("/addHod", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.status(401).json({
+        return res.status(401).json({
           status: "error",
           message: "unautharised user",
         });
@@ -34,7 +34,7 @@ router.post("/addHod", async (req, res) => {
         }
         let match2 = await Hod.findOne({ idNumber: id });
         if (match2) {
-          res.json({
+          return res.json({
             status: "error",
             message: "ID already exist",
           });
@@ -44,12 +44,12 @@ router.post("/addHod", async (req, res) => {
         if (!match) {
           let newHod = new Hod(data);
           await newHod.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully added",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "hod already exisit",
           });
@@ -58,7 +58,7 @@ router.post("/addHod", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in adding hod.",
     });
@@ -71,7 +71,7 @@ router.get("/view/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -80,7 +80,7 @@ router.get("/view/:id", async (req, res) => {
         let data = await Hod.findOne({ _id: hodId })
           .populate("department_id", "-description -_id -__v")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -88,7 +88,7 @@ router.get("/view/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in view department by hod id",
     });
@@ -143,13 +143,13 @@ router.get("/viewAll", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
       } else {
         let data = await Hod.find().populate("department_id").exec();
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -157,7 +157,7 @@ router.get("/viewAll", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in view all hod",
     });
@@ -170,7 +170,7 @@ router.put("/profile/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -190,7 +190,7 @@ router.put("/profile/:id", async (req, res) => {
             message: "No data found",
           });
         }
-        res.json({
+        return res.json({
           status: "success",
           message: "successfully updated",
           data: updatedData,
@@ -199,7 +199,7 @@ router.put("/profile/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in update hod",
     });
@@ -217,7 +217,7 @@ router.get("/totalHods", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in update hod",
     });

@@ -10,7 +10,7 @@ router.post("/allocate", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -24,7 +24,7 @@ router.post("/allocate", async (req, res) => {
         }
         let newSubAllocation = new SubjectAllocation(data);
         await newSubAllocation.save();
-        res.json({
+        return res.json({
           status: "success",
           message: "successfully allocated subject",
         });
@@ -32,7 +32,7 @@ router.post("/allocate", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in subejct allocation",
     });
@@ -45,13 +45,13 @@ router.get("/viewall", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
       } else {
         let data = await SubjectAllocation.find().populate("staff_id subject_id","-_id -__v");
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -59,7 +59,7 @@ router.get("/viewall", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.json({
+    return res.json({
       status: "error",
       message: "somthing went wrong in view all subject allocation",
     });

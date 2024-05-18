@@ -10,7 +10,7 @@ router.post("/addSub", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -27,12 +27,12 @@ router.post("/addSub", async (req, res) => {
         if (!match) {
           let newSubject = new Subject(data);
           await newSubject.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully added new subject",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "subject is already exist",
           });
@@ -41,7 +41,7 @@ router.post("/addSub", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add subject",
     });
@@ -54,7 +54,7 @@ router.get("/viewall", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -69,7 +69,7 @@ router.get("/viewall", async (req, res) => {
             },
           })
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           data: data,
         });
@@ -77,7 +77,7 @@ router.get("/viewall", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add subject",
     });

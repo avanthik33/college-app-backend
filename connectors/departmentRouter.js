@@ -15,7 +15,7 @@ router.post("/addDep", async (req, res) => {
       if (decoded) {
         let data = req.body;
         let department = data.department;
-        let description=data.description
+        let description = data.description;
         if (!description || !department) {
           return res.status(400).json({
             status: "error",
@@ -26,18 +26,18 @@ router.post("/addDep", async (req, res) => {
         if (!match) {
           let newDep = new Department(data);
           await newDep.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully added department",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "department already exist",
           });
         }
       } else {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautharised user",
         });
@@ -45,7 +45,7 @@ router.post("/addDep", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add department",
     });
@@ -61,12 +61,12 @@ router.get("/viewAll", async (req, res) => {
         let data = await Department.find()
           .populate("admin_id", "-_id -__v -password")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           depData: data,
         });
       } else {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherised user",
         });
@@ -74,7 +74,7 @@ router.get("/viewAll", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in view all department",
     });
@@ -87,7 +87,7 @@ router.delete("/delete/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unauthorized user",
         });
@@ -95,14 +95,13 @@ router.delete("/delete/:id", async (req, res) => {
         let id = req.params.id;
         const department = await Department.findById(id);
         if (!department) {
-          res.status(404).json({
+          return res.status(404).json({
             status: "error",
             message: "Department not found",
           });
-          return;
         }
         await department.deleteOne();
-        res.json({
+        return res.json({
           status: "success",
           message: "Department deleted",
         });
@@ -110,7 +109,7 @@ router.delete("/delete/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "Something went wrong in delete department",
     });
@@ -123,15 +122,15 @@ router.put("/edit/:id", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
       } else {
         const id = req.params.id;
         let input = req.body;
-        if (!input) {
-          res.json({
+        if (!input.department || !input.description) {
+          return res.status(400).json({
             status: "error",
             message: "No input data Found",
           });
@@ -142,7 +141,7 @@ router.put("/edit/:id", async (req, res) => {
         data.department = inputDepartment;
         data.description = inputDescription;
         await data.save();
-        res.json({
+        return res.json({
           status: "success",
           message: "successfully updated",
         });
@@ -150,7 +149,7 @@ router.put("/edit/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in edit department",
     });
@@ -184,6 +183,5 @@ router.get("/view/:id", async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;

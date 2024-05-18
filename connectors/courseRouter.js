@@ -10,7 +10,7 @@ router.post("/add", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -27,12 +27,12 @@ router.post("/add", async (req, res) => {
         if (!match) {
           let newCourse = new Course(data);
           await newCourse.save();
-          res.json({
+          return res.json({
             status: "success",
             message: "successfully course added.",
           });
         } else {
-          res.json({
+          return res.json({
             status: "error",
             message: "course already exist",
           });
@@ -41,7 +41,7 @@ router.post("/add", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing went wrong in add course",
     });
@@ -54,7 +54,7 @@ router.get("/viewall", async (req, res) => {
     const token = req.headers["token"];
     jwt.verify(token, "collegeApp", async (error, decoded) => {
       if (error) {
-        res.json({
+        return res.json({
           status: "error",
           message: "unautherized user",
         });
@@ -62,7 +62,7 @@ router.get("/viewall", async (req, res) => {
         let data = await Course.find()
           .populate("department_id", "-_id -__v ")
           .exec();
-        res.json({
+        return res.json({
           status: "success",
           Courses: data,
         });
@@ -70,7 +70,7 @@ router.get("/viewall", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "somthing error in view all courses",
     });
