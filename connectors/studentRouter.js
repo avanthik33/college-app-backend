@@ -107,6 +107,12 @@ router.post("/viewStudByCourse", async (req, res) => {
         });
       } else {
         const course_id = req.body.course_id;
+        if (!course_id) {
+          return res.status(400).json({
+            status: "error",
+            message: "no input found",
+          });
+        }
         const students = await Student.find({ course_id: course_id });
         return res.status(200).json({
           status: "success",
@@ -183,6 +189,59 @@ router.get("/totalStudents", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({
+      status: "error",
+      message: "internal server error",
+    });
+  }
+});
+
+//view student by id
+router.post("/viewStudent/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let data = await Student.findById(id).populate("course_id").exec();
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    }
+    return res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+    });
+  }
+});
+
+//update student profile
+router.put("/profile/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let input = req.body;
+    let data = await Student.findByIdAndUpdate(
+      { _id: id },
+      { $set: input },
+      { new: true }
+    );
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    }
+    return res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
       status: "error",
       message: "internal server error",
     });
