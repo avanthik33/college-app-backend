@@ -194,4 +194,57 @@ router.get("/totalStudents", async (req, res) => {
     });
   }
 });
+
+//view student by id
+router.post("/viewStudent/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let data = await Student.findById(id).populate("course_id").exec();
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    }
+    return res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+    });
+  }
+});
+
+//update student profile
+router.put("/profile/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let input = req.body;
+    let data = await Student.findByIdAndUpdate(
+      { _id: id },
+      { $set: input },
+      { new: true }
+    );
+    if (!data) {
+      return res.json({
+        status: "error",
+        message: "no data found",
+      });
+    }
+    return res.json({
+      status: "success",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: "error",
+      message: "internal server error",
+    });
+  }
+});
 module.exports = router;
