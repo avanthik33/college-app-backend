@@ -11,6 +11,7 @@ const staffRouter = require("./connectors/staffRouter");
 const subjectRouter = require("./connectors/subjectRouter");
 const subjectAllocationRouter = require("./connectors/subjectAllocationRouter");
 const absentRouter=require("./connectors/absentRouter")
+const semesterRouter=require("./connectors/semesterRouter")
 
 const app = express();
 app.use(express.json());
@@ -39,6 +40,8 @@ app.use("/staff", staffRouter);
 app.use("/subject", subjectRouter);
 app.use("/subAllocation", subjectAllocationRouter);
 app.use("/absent", absentRouter);
+app.use("/semester", semesterRouter);
+
 
 
 app.listen(3001, () => {

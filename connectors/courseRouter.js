@@ -93,7 +93,7 @@ router.post("/viewCourseByDep", async (req, res) => {
           .populate("department_id")
           .exec();
         return res.json({
-          status: "error",
+          status: "success",
           data: data,
         });
       }
