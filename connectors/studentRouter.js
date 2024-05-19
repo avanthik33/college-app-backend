@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const Student = require("../models/studentModel");
+const { transporter } = require("../utils");
 
 const router = express.Router();
 
@@ -29,9 +30,53 @@ router.post("/addStudent", async (req, res) => {
         if (!match) {
           let newStudent = new Student(data);
           await newStudent.save();
+
+          const mailOptions = {
+            to: data.email,
+            subject: "Welcome to Our College",
+            html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 10px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Dear ${data.firstName} ${data.lastName},</h2>
+        <p style="color: #333; font-size: 16px;">
+          We are thrilled to welcome you as a new student at ABCD College. Your journey with us will be filled with exciting opportunities and valuable experiences.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Here are your login credentials:
+        </p>
+        <ul style="color: #333; font-size: 16px; padding-left: 20px;">
+          <li><strong>College ID Number:</strong> ${data.idNumber}</li>
+          <li><strong>Email:</strong> ${data.email}</li>
+          <li><strong>Password:</strong> ${data.password}</li>
+        </ul>
+        <p style="color: #333; font-size: 16px;">
+          Please keep your login credentials secure and do not share them with anyone.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          If you have any questions or need assistance, feel free to contact us at admin@abcdcollege.com.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Welcome to our community!
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Best regards,<br>
+          College Administration
+        </p>
+      </div>
+    </div>
+  `,
+          };
+
+          transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+              console.error("Error sending email:", err);
+            } else {
+              console.log("Email sent:", info.response);
+            }
+          });
           return res.json({
             status: "success",
-            message: "successfully added student",
+            message: "successfully added student and mail send",
           });
         } else {
           return res.json({

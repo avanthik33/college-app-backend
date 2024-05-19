@@ -1,6 +1,7 @@
 const express = require("express");
 const Hod = require("../models/hodModel");
 const jwt = require("jsonwebtoken");
+const { transporter } = require("../utils");
 
 const router = express.Router();
 
@@ -23,9 +24,9 @@ router.post("/addHod", async (req, res) => {
           !data.lastName ||
           !data.gender ||
           !data.qualification ||
-          data.email ||
-          data.phoneNo ||
-          data.password
+          !data.email ||
+          !data.phoneNo ||
+          !data.password
         ) {
           return res.status(400).json({
             status: "error",
@@ -44,9 +45,61 @@ router.post("/addHod", async (req, res) => {
         if (!match) {
           let newHod = new Hod(data);
           await newHod.save();
+
+          const capitalizedFirstName =
+            data.firstName.charAt(0).toUpperCase() +
+            data.firstName.slice(1).toLowerCase();
+          const capitalizedLastName =
+            data.lastName.charAt(0).toUpperCase() +
+            data.lastName.slice(1).toLowerCase();
+
+          const mailOptions = {
+            to: data.email,
+            subject: "Welcome to Our College",
+            html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 10px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Dear ${capitalizedFirstName} ${capitalizedLastName},</h2>
+        <p style="color: #333; font-size: 16px;">
+          We are delighted to welcome you as the new Head of Department at ABCD College. Your commitment and expertise will greatly contribute to our institution's success.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Here are your login credentials:
+        </p>
+        <ul style="color: #333; font-size: 16px; padding-left: 20px;">
+          <li><strong>College ID Number:</strong> ${data.idNumber}</li>
+          <li><strong>Email:</strong> ${data.email}</li>
+          <li><strong>Password:</strong> ${data.password}</li>
+        </ul>
+        <p style="color: #333; font-size: 16px;">
+          Please keep your login credentials secure and do not share them with anyone.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          If you have any questions or need assistance, feel free to contact us at admin@abcdcollege.com.
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Welcome aboard!
+        </p>
+        <p style="color: #333; font-size: 16px;">
+          Best regards,<br>
+          College Administration
+        </p>
+      </div>
+    </div>
+  `,
+          };
+
+          transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+              console.error("Error sending email:", err);
+            } else {
+              console.log("Email sent:", info.response);
+            }
+          });
+
           return res.json({
             status: "success",
-            message: "successfully added",
+            message: "successfully added and mail sends",
           });
         } else {
           return res.json({
