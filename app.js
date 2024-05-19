@@ -10,20 +10,17 @@ const hodRouter = require("./connectors/hodRouter");
 const staffRouter = require("./connectors/staffRouter");
 const subjectRouter = require("./connectors/subjectRouter");
 const subjectAllocationRouter = require("./connectors/subjectAllocationRouter");
-const absentRouter=require("./connectors/absentRouter")
-const semesterRouter=require("./connectors/semesterRouter")
+const absentRouter = require("./connectors/absentRouter");
+const semesterRouter = require("./connectors/semesterRouter");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 mongoose
-  .connect(
-    "mongodb+srv://avanthik:avanthik@cluster0.yuxak7x.mongodb.net/CollegeDb?retryWrites=true&w=majority&appName=Cluster0",
-    {
-      useNewUrlParser: true,
-    }
-  )
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+  })
   .then(() => {
     console.log("MongoDB connected...");
   })
@@ -42,8 +39,7 @@ app.use("/subAllocation", subjectAllocationRouter);
 app.use("/absent", absentRouter);
 app.use("/semester", semesterRouter);
 
-
-
-app.listen(3001, () => {
-  console.log("server is running..");
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
